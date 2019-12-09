@@ -20,8 +20,8 @@ const state = () => ({
   perPage: "&per_page=10",
   wpFetchHeaders: {
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Expose-Headers": "x-wp-total"
+      // "Access-Control-Allow-Origin": "*",
+      // "Access-Control-Expose-Headers": "x-wp-total"
     }
   }
 });
