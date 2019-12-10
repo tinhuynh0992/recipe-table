@@ -96,8 +96,6 @@ export default {
 
   methods: {
     customFilter(value, search, item) {
-      // console.log("DEBUG customFilter")
-      // console.log(item.toString())
       search = search.toString().toLowerCase();
       return item.toString().includes(search)
     }
@@ -125,6 +123,11 @@ export default {
     display: block;
   }
 
+  .schema_strong {
+    font-size: 19px;
+    font-weight: 700;
+  }
+
   .schema_checkbox_list {
     margin-left: 0;
 
@@ -132,18 +135,6 @@ export default {
       padding: 11px;
       border-radius: 4px;
       margin-right: 10px;
-
-      &:checked:after {
-        font-size: 12px;
-        left: 7px;
-        top: 3px;
-      }
-
-      &:checked+label.regular-checkbox:after {
-        font-size: 12px;
-        left: 7px;
-        top: 3px;
-      }
     }
 
     .regular-checkbox {
@@ -154,24 +145,6 @@ export default {
       border-radius: 3px;
       display: inline-block;
       position: relative;
-
-      &:checked:after {
-        content: '\2713';
-        font-size: 14px;
-        position: absolute;
-        top: 0;
-        left: 3px;
-        color: #fff;
-      }
-
-      &:checked+label.regular-checkbox:after {
-        content: '\2713';
-        font-size: 14px;
-        position: absolute;
-        top: 0;
-        left: 3px;
-        color: #fff;
-      }
     }
 
     input.regular-checkbox {

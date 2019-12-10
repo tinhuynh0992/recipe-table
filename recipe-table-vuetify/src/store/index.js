@@ -37,7 +37,9 @@ const parseExtraData = function(htmlStr) {
           extraData.preTime = preTimeText.replace("Prep Time:", "")
         }
         // Get cooking time
-        const cookTimeDiv = preTimePropertyDiv.querySelector('.cook-time')
+        // Note: cooking time and interactive time have the same class name
+        const cookTimeDivs = preTimePropertyDiv.querySelectorAll('.cook-time')
+        const cookTimeDiv = cookTimeDivs && cookTimeDivs.length > 0 ? cookTimeDivs[cookTimeDivs.length - 1] : null
         if (cookTimeDiv && cookTimeDiv.childElementCount > 2) {
           const cookTimeText = cookTimeDiv.children[1].textContent
           extraData.cookTime = cookTimeText.replace("Cook Time:", "")
@@ -50,9 +52,17 @@ const parseExtraData = function(htmlStr) {
     const recipeDetailContainer = html.querySelector(".recipe-details")
     if (recipeDetailContainer) {
       const recipeDetailsContents = recipeDetailContainer.querySelectorAll(".recipe-details-content")
+      let counter = 1
       if (recipeDetailsContents && recipeDetailsContents.length > 2) {
-        const ingredientDiv = recipeDetailsContents[1]
-        extraData.ingredient = ingredientDiv.innerHTML
+        while (counter < recipeDetailsContents.length) {
+          const ingredientDiv = recipeDetailsContents[counter]
+          const ingredientHeader = ingredientDiv.querySelector("h4, .schema_strong")
+          if (ingredientHeader && !ingredientHeader.textContent.toLowerCase().includes("ingredients")) {
+            break
+          }
+          extraData.ingredient += ingredientDiv.innerHTML
+          counter++
+        }
       }
     }
   }
@@ -130,7 +140,6 @@ const actions = {
   async fetchPosts({ commit, state }, numPages) {
     const posts = [];
     for (let page = 1; page <= numPages; page += 1) {
-    // for (let page = numPages; page <= numPages; page += 1) {
       const post = axios.get(
         `${state.baseUrl}${state.perPage}&page=${page}`,
         state.wpFetchHeaders
