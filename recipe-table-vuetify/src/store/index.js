@@ -3,6 +3,53 @@ import Vuex from "vuex";
 import axios from "axios";
 Vue.use(Vuex);
 
+const parseExtraData = function(htmlStr) {
+  const extraData = {
+    preTime: 0,
+    cookTime: 0,
+    serves: 0,
+    ingredient: ''
+  }
+  const parser = new DOMParser();
+  const html = parser.parseFromString(htmlStr, "text/html");
+
+  // Parse preparing time, cooking time and serves
+  const schemaContainer = html.getElementById("schema_block");
+  const preTimeContainer = schemaContainer.querySelector(".prep-times")
+  if (preTimeContainer) {
+    const preTimePropertyDiv = preTimeContainer.querySelector(".recipeProperties")
+    if (preTimePropertyDiv) {
+      const prepTimeCols = preTimePropertyDiv.querySelectorAll(".prep-time-col")
+      // Get serve
+      const serveDiv = prepTimeCols[prepTimeCols.length - 1]
+      if (serveDiv) {
+        const serveText = serveDiv.firstChild.textContent
+        extraData.serves = serveText.replace("Serves:", "")
+      }
+      // Get prepare time
+      const preTimeDiv = preTimePropertyDiv.querySelector('.prep-time')
+      if (preTimeDiv && preTimeDiv.childElementCount > 2) {
+        const preTimeText = preTimeDiv.children[1].textContent
+        extraData.preTime = preTimeText.replace("Prep Time:", "")
+      }
+      // Get cooking time
+      const cookTimeDiv = preTimePropertyDiv.querySelector('.cook-time')
+      if (cookTimeDiv && cookTimeDiv.childElementCount > 2) {
+        const cookTimeText = cookTimeDiv.children[1].textContent
+        extraData.cookTime = cookTimeText.replace("Cook Time:", "")
+      }
+    }
+
+  }
+
+  // Parse ingredient
+  // const recipeDetailDivs = html.querySelectorAll("recipe-details")
+  // const recipeDetailDiv = recipeDetailDivs && recipeDetailDivs.length > 0 ? recipeDetailDivs[0] : null
+  console.log("DEBUG parseExtraData", extraData)
+
+  return extraData
+}
+
 export default new Vuex.Store({
   state: {},
   mutations: {},
@@ -77,17 +124,23 @@ const actions = {
         return postData;
       })
       .then(data => {
-        const modifiedPosts = data.map(post => ({
-          content: post.content,
-          excerpt: post.excerpt,
-          author: post.author,
-          link: post.link,
-          id: post.id,
-          tags: post.tags,
-          title: post.title.rendered,
-          slug: post.slug,
-          date: post.date
-        }));
+        const modifiedPosts = data.map(post => {
+          const extraData = parseExtraData(post.content.rendered)
+          return {
+            content: post.content,
+            excerpt: post.excerpt,
+            preTime: extraData ? extraData.preTime : 0,
+            cookTime: extraData ? extraData.cookTime : 0,
+            reserves: extraData ? extraData.serves : 0,
+            author: post.author,
+            link: post.link,
+            id: post.id,
+            tags: post.tags,
+            title: post.title.rendered,
+            slug: post.slug,
+            date: post.date
+          }
+        })
         commit("SET_POSTS", modifiedPosts);
         commit("SET_LOADING_STATE", false);
         return true;

@@ -80,9 +80,9 @@ export default {
         { text: "Tags", value: "tags", width: '40%', sortable: false },
 
         // TODO: Add these columns & make searchable
-        // { text: "Prep Time", value: "" },
-        // { text: "Cook Time", value: "" },
-        // { text: "Serves", value: "" },
+        { text: "Prep Time", value: "preTime" },
+        { text: "Cook Time", value: "cookTime" },
+        { text: "Serves", value: "reserves" },
 
         { text: "Post Date", value: "date" },
         { text: "Post Link", value: "link" },
