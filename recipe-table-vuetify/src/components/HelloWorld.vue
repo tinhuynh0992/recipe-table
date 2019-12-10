@@ -22,9 +22,6 @@
         </td>
       </template>
 
-      
-        
-
       <!-- Recipe Author -->
       <template v-slot:item.author="{ item }">
         <span v-text="recipeAuthor(item.author)" />
