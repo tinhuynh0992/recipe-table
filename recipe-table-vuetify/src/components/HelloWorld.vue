@@ -14,9 +14,11 @@
       :expanded.sync="expanded"
       show-expand
     >
-      <template v-slot:expanded-item="{ headers }">
+      <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
-          Ingredients List Goes Here ...
+          <div v-html="item.content.rendered" class="ingredients">
+
+          </div>
         </td>
       </template>
 
@@ -88,7 +90,8 @@ export default {
         { text: "Post Link", value: "link" },
         { text: "Ingredients", value: "content" },
         { text: "", value: "data-table-expand" }
-      ]
+      ],
+      content: [],
     };
   },
   computed: {
@@ -128,6 +131,7 @@ export default {
       };
     }
   },
+
   methods: {
     // customFilter(items, search, filter) {
     // search = search.toString().toLowerCase();
@@ -149,4 +153,8 @@ export default {
   display: flex; 
   flex-wrap: wrap;
 } 
+
+.ingredients {
+  padding-top: 3vh;
+}
 </style>
