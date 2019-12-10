@@ -1,6 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import { allUsers } from "@/utils/allUsers";
+import { allTags } from "@/utils/allTags";
+
 Vue.use(Vuex);
 
 const parseExtraData = function(htmlStr) {
@@ -54,6 +57,16 @@ const parseExtraData = function(htmlStr) {
     }
   }
   return extraData
+}
+
+const getAuthorById = function(author) {
+  const recipeAuthor = allUsers.find(user => user.id === author);
+  return recipeAuthor.name;
+}
+
+const getTagById = function(id) {
+  const recipeTag = allTags.find(tag => tag.id === id);
+  return recipeTag;
 }
 
 export default new Vuex.Store({
@@ -141,12 +154,27 @@ const actions = {
             reserves: extraData ? extraData.serves : 0,
             ingredient: extraData ? extraData.ingredient : '',
             author: post.author,
+            authorStr: getAuthorById(post.author),
             link: post.link,
             id: post.id,
-            tags: post.tags,
+            tagIds: post.tags,
+            tags: post.tags.map(id => getTagById(id)),
             title: post.title.rendered,
             slug: post.slug,
-            date: post.date
+            date: post.date,
+
+            toString: function() {
+              const recipeName = this.title
+              const tags = this.tags.map(tag => tag.name).join(',')
+              const author = this.authorStr
+              const date = new Date(this.date).toLocaleDateString()
+              const ingredient = this.ingredient
+              return recipeName.toLowerCase() + " " +
+                tags.toLowerCase() + " " +
+                author.toLowerCase() + " " +
+                date.toLowerCase() + " " +
+                ingredient.toLowerCase()
+            }
           }
         })
         commit("SET_POSTS", modifiedPosts);

@@ -12,6 +12,7 @@
       :search="search"
       :footer-props="footerProps"
       :expanded.sync="expanded"
+      :custom-filter="customFilter"
       show-expand
     >
       <template v-slot:expanded-item="{ headers, item }">
@@ -23,12 +24,12 @@
 
       <!-- Recipe Author -->
       <template v-slot:item.author="{ item }">
-        <span v-text="recipeAuthor(item.author)" />
+        <span v-text="item.authorStr" />
       </template>
       <!-- Recipe Tags -->
       <template v-slot:item.tags="{ item }">
         <div class="tags-container my-2">
-          <a :href="tag.link" target="_blank" v-for="tag in recipeTags(item.tags)" :key="tag.id">
+          <a :href="tag.link" target="_blank" v-for="tag in item.tags" :key="tag.id">
             <v-chip
               style="cursor: pointer;"
               class="my-1 mx-1 caption p-0"
@@ -52,19 +53,12 @@
       <!-- Recipe Ingredients -->
       <template v-slot:item.content="{ item }">
         Click to expand
-        <!-- {{ getRecipeSchemaHTML(item.content) }} -->
-        <!-- {{ item.excerpt.protected }} -->
-        <!-- <div v-for="(node, index) in getRecipeSchemaHTML(item.content)" :key="index">
-          <span class="my-2">{{ node }}</span>
-        </div>-->
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script>
-import { allTags } from "@/utils/allTags";
-import { allUsers } from "@/utils/allUsers";
 import { mapGetters } from "vuex";
 
 export default {
@@ -97,53 +91,21 @@ export default {
     ...mapGetters({
       posts: "posts",
       loadingPosts: "loadingPosts"
-    }),
-    recipeAuthor() {
-      return author => {
-        const recipeAuthor = allUsers.find(user => user.id === author);
-        return recipeAuthor.name;
-      };
-    },
-    recipeTags() {
-      return tags => {
-        let tagsList = [];
-        tags.forEach(tag => {
-          tagsList.push(allTags.find(t => t.id === tag));
-        });
-        return tagsList;
-      };
-    },
-    getRecipeSchemaHTML() {
-      return post => {
-        const SCHEMA_ID = "schema_block";
-        // const SCHEMA_CLASS = "schema_new-recipe";
-        const PARSER = new DOMParser();
-        const POST_AS_HTML = PARSER.parseFromString(post.rendered, "text/html");
-        const SCHEMA_HTML = POST_AS_HTML.getElementById(SCHEMA_ID);
-        const RECIPE_DETAILS = SCHEMA_HTML.querySelectorAll(
-          ".recipe-details"
-        );
-
-
-        // console.log({ SCHEMA_HTML: SCHEMA_HTML, RECIPE_DETAILS: RECIPE_DETAILS.textContent });
-        return RECIPE_DETAILS.textContent
-      };
-    }
+    })
   },
 
   methods: {
-    // customFilter(items, search, filter) {
-    // search = search.toString().toLowerCase();
-    // console.log({ items, search, filter })
-    // return items.filter(row => filter(row["ingredients"], search));
-    // }
+    customFilter(value, search, item) {
+      // console.log("DEBUG customFilter")
+      // console.log(item.toString())
+      search = search.toString().toLowerCase();
+      return item.toString().includes(search)
+    }
   },
   mounted() {
     this.$store.dispatch("getNumPages").then(numPages => {
       this.$store.dispatch("fetchPosts", numPages);
     });
-
-    // console.log({allTags, allUsers})
   }
 };
 </script>
