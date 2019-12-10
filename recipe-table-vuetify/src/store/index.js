@@ -42,14 +42,17 @@ const parseExtraData = function(htmlStr) {
       }
 
     }
+
+    // Parse ingredient
+    const recipeDetailContainer = html.querySelector(".recipe-details")
+    if (recipeDetailContainer) {
+      const recipeDetailsContents = recipeDetailContainer.querySelectorAll(".recipe-details-content")
+      if (recipeDetailsContents && recipeDetailsContents.length > 2) {
+        const ingredientDiv = recipeDetailsContents[1]
+        extraData.ingredient = ingredientDiv.innerHTML
+      }
+    }
   }
-
-
-  // Parse ingredient
-  // const recipeDetailDivs = html.querySelectorAll("recipe-details")
-  // const recipeDetailDiv = recipeDetailDivs && recipeDetailDivs.length > 0 ? recipeDetailDivs[0] : null
-  console.log("DEBUG parseExtraData", extraData)
-
   return extraData
 }
 
@@ -114,6 +117,7 @@ const actions = {
   async fetchPosts({ commit, state }, numPages) {
     const posts = [];
     for (let page = 1; page <= numPages; page += 1) {
+    // for (let page = numPages; page <= numPages; page += 1) {
       const post = axios.get(
         `${state.baseUrl}${state.perPage}&page=${page}`,
         state.wpFetchHeaders
@@ -135,6 +139,7 @@ const actions = {
             preTime: extraData ? extraData.preTime : 0,
             cookTime: extraData ? extraData.cookTime : 0,
             reserves: extraData ? extraData.serves : 0,
+            ingredient: extraData ? extraData.ingredient : '',
             author: post.author,
             link: post.link,
             id: post.id,

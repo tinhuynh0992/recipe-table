@@ -16,8 +16,7 @@
     >
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
-          <div v-html="item.content.rendered" class="ingredients">
-
+          <div v-html="item.ingredient" class="ingredient-row">
           </div>
         </td>
       </template>
@@ -148,13 +147,91 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="scss">
 .tags-container {
   display: flex; 
   flex-wrap: wrap;
 } 
 
-.ingredients {
-  padding-top: 3vh;
+.ingredient-row {
+  padding: 20px;
+
+  &>h4 {
+    font-size: 23px;
+    font-weight: 400;
+    margin: 10px 0;
+    display: block;
+  }
+
+  .schema_checkbox_list {
+    margin-left: 0;
+
+    .big-checkbox {
+      padding: 11px;
+      border-radius: 4px;
+      margin-right: 10px;
+
+      &:checked:after {
+        font-size: 12px;
+        left: 7px;
+        top: 3px;
+      }
+
+      &:checked+label.regular-checkbox:after {
+        font-size: 12px;
+        left: 7px;
+        top: 3px;
+      }
+    }
+
+    .regular-checkbox {
+      background-color: #fafafa;
+      border: 1px solid #cacece;
+      box-shadow: inset 0 -15px 10px -12px rgba(0,0,0,.05);
+      padding: 9px;
+      border-radius: 3px;
+      display: inline-block;
+      position: relative;
+
+      &:checked:after {
+        content: '\2713';
+        font-size: 14px;
+        position: absolute;
+        top: 0;
+        left: 3px;
+        color: #fff;
+      }
+
+      &:checked+label.regular-checkbox:after {
+        content: '\2713';
+        font-size: 14px;
+        position: absolute;
+        top: 0;
+        left: 3px;
+        color: #fff;
+      }
+    }
+
+    input.regular-checkbox {
+      opacity: 0;
+      position: absolute;
+    }
+
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  li {
+    margin-bottom: 5px;
+    list-style-type: none;
+
+    span {
+      position: relative;
+      display: inline;
+      top: -5px;
+    }
+  }
 }
 </style>
